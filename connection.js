@@ -15,7 +15,6 @@ var ui_set_status = ( status ) => {
 	console.log("status=",status);
 }
 
-
 let set_status = ui_set_status;
 
      
