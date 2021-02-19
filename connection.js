@@ -10,10 +10,11 @@ function decode_resp(tdata) {
     }
 }
 
-
-var ui_set_status = ( status ) => {
-	console.log("status=",status);
+if ( typeof(ui_set_status) == 'undefined')  ui_set_status = ( status ) => {
+        console.log("status=",status);
 }
+
+
 
 let set_status = ui_set_status;
 

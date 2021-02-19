@@ -66,9 +66,9 @@ let receive = (out, err ) => {
 
 
 let update = () => {
-	const cmd = "weather.get()";
+	const cmd = "import weather; weather.get()";
 	gConnection.run( cmd, receive );
-	setTimeout( update, 10000 );
+	setTimeout( update, 5000 );
 }
 
 
