@@ -1,7 +1,8 @@
 .container {
   display: flex;
   background-image: linear-gradient(white, blue);
-  height: 100vh;
+  height: 1080px;
+  width: 1920px;
 }
 
 .column {
@@ -9,7 +10,7 @@
   flex-grow: 1;
   background: white;
   margin: 2%;
-  width: 20vw;
+  width: 20%;
   height: 80%;
   flex-direction: column;
   color: #000099;
@@ -28,7 +29,7 @@
 .graph {
 background: white;
 height: 60%;
-width: 20vw;
+width: 400px;
 }
 
 
