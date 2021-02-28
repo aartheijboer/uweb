@@ -70,8 +70,20 @@ createEditor = ( container , val="" ) => {
 
 	let editor = CodeMirror( container, config );
 	editor.id = "cm"+ createEditor.counter; // some unique name
-
+	editor.history_index = 0; // for scrolling in history
 	
+	editor.history = ( d ) => {
+
+		editor.history_index += d;
+		if ( editor.history_index < 0 ) editor.history_index = 0;
+
+		let t = gHistory.get( editor.history_index+1 );
+
+		if ( t ) {
+			editor.setValue( t );
+		}
+
+	};
 
 	let oldActivate = container.onActivate;
 
@@ -147,11 +159,17 @@ let createNotebookInputBox = ( container, connection ) => {
 
 		e.outputBox.innerHTML = "";
 
+		gHistory.add( code );
+
 		connection.send( code, 
                          ( out, err ) => { 
-                         	console.log( out );
-                         	console.log( err );
-                         	e.outputBox.innerHTML = `<span style="color:#0000FF";>${out}</span><span style="color:#FF0000";>${err}</span>`;},
+                         	//console.log( out );
+                         	//console.log( err );
+                         	e.outputBox.innerHTML = `<span style="color:#0000FF";>${out}</span><span style="color:#FF0000";>${err}</span>`;
+                         	//e.outputBox.innerHTML.scrollIntoView(false);
+                         	e.outputBox.scrollTop = e.outputBox.scrollHeight;
+                         },
+                         	
                          ( out, err ) => { e.nextInputBox(); },
                          true );
 	};
@@ -161,8 +179,14 @@ let createNotebookInputBox = ( container, connection ) => {
 		"Ctrl-Enter": (cm) => { 
 			let pythoncode = cm.getValue();
       		runcontent( pythoncode ); 
+    	},
+
+    	"Ctrl-Up" : (cm) => { cm.history( 1 ); },
+
+    	"Ctrl-Down" : (cm) => { cm.history( -1 ); }
     	}
-    });
+
+    );
 
 	return e;
 };
@@ -172,6 +196,25 @@ let createNotebookInputBox = ( container, connection ) => {
 
 function createNotebook( container , connection ) {
 
-	input = createNotebookInputBox ( container, connection );
+	let notebook = {
+
+		container : container,
+
+		connection : connection ,
+
+		input :  createNotebookInputBox ( container, connection ),
+
+		get_content : () => {
+
+			const l = container.querySelectorAll(".CodeMirror");
+
+			for ( let i = 0 ; i < l.length-1 ; i++ ) {
+				console.log( l[i].textContent );
+			}
+		}
+
+	};
+
+	return notebook;
 
 };

@@ -7,14 +7,29 @@
     <script src="jquery.min.js"></script>
     <script type="text/javascript" src="connection.js"></script>
 
+    <script src="plotly.min.js"></script>
+
 </head>
 <body style="height: 100%; margin:0;">
 
-<div class="container">
-  <div class="item" id="temp">hi</div>
-  <div class="item" id="humi">there</div>
-  <div class="item" id="vwin">aaa</div>
+<div class="container" id="container">
+<!--   <div class="column" > <div class="item" id="temp"> x </div>  
+                        <div class="graph" id="gtemp"> g</div> 
+  </div>
+  
+  <div class="column" > <div class="item" id="humi"> x </div>  
+                        <div class="graph" id="ghumi"> g</div>  
+  </div>
+  
+  <div class="column" > <div class="item" id="pres"> x </div>  
+                        <div class="graph" id="gpres"> g</div>  
+  </div>
+  
+  <div class="column" > <div class="item" id="vwin"> x </div>  
+                        <div class="graph"  id="gvwin"> g</div>  
+  </div> -->
 </div>
+<!-- <div id="tester" style="width:600px;height:250px;"></div> -->
 
 
 
@@ -22,21 +37,81 @@
 <script type="text/javascript">
 
 
-
+let V = { date: [],
+          temp: [], };
   
 
 $( function () {
-  
    setTimeout( init2, 0 );
-
 });
+
+
+let createQuantityBox = ( container , 
+                          quant = "temperatuur",
+                          unit  = "C" ) =>
+{
+
+  let r = {};
+
+  r.container = container;
+  
+  r.column = document.createElement('div');
+  r.column.className = "column"
+  r.container.appendChild( r.column );
+
+  r.item_div  = document.createElement('div');
+  r.item_div.className = "item";
+  r.column.appendChild( r.item_div );
+
+  r.graph_div = document.createElement('div');
+  r.graph_div.className = "graph";
+  r.column.appendChild( r.graph_div );
+
+
+
+  r.plot = Plotly.newPlot ( r.graph_div , [ { x : [] , y : [] } ] );
+
+
+  r.update = ( date, latest_value ) => {
+
+    console.log( " update ", r.quant, date, latest_value );
+
+
+    r.item_div.innerHTML = '<p style="font-size:20px" > '+quant+' </p><p><span class="quant">' + latest_value +'</span><span class="unit">'+ unit +'</span</p>' ;
+
+    let update = {
+      x:  [[ date ]],
+      y: [[ latest_value ]]
+    }
+
+  Plotly.extendTraces ( r.graph_div , update , [0] );
+    
+
+  };
+
+
+
+  return r;
+
+};
+
+
+
+
+let boxes = {} ;
 
 
 let init2 = () => {
 
+  let c = document.getElementById('container');
+
+  boxes.temp_box = createQuantityBox( c, "temperatuur"      , "C"   );
+  boxes.pres_box = createQuantityBox( c, "luchtdruk"        , "hPa" );
+  boxes.humi_box = createQuantityBox( c, "luchtvochtigheid" , "%"   );
+  boxes.wind_box = createQuantityBox( c, "windsnelheid"     , "mV"  );
+  
   const ip = "192.168.188.57:8266";
   const pw = "4025";
-
 
   gConnection = createWebreplConnection( ip, pw );
 
@@ -45,22 +120,32 @@ let init2 = () => {
 
   	console.log("connected to ", ip )
   }
-
-  update();
-
+  
+  setTimeout( update, 1000 ); // start after 1 sec
 }
+
+
+
+let d = 1;
 
 let receive = (out, err ) => {
 	console.log("got", out,   "     err=",err);
 
 	const v = out.split(" ")
-	const temp = v[0];
-	const humi = v[1];
-	const vwin = v[2];
+	const temp_1 = v[0]; // from dht11
+  const temp_2 = Number(v[1]).toFixed(2);
+  const pres   = Number(v[2]).toFixed(1);
+	const humi   = Number(v[3]);
+	const vwin   = Number(v[4]);
 
-	$("#temp").html( '<p style="font-size:20px" > temperatuur </p><br><p>' + temp +"&#176<sup><small>C</sup></small></p>" );
-	$("#humi").html( '<p style="font-size:20px" > luchtvochtigheid </p><br><p>' + humi +"<sup><small>%</sup></small> </p>");
-	$("#vwin").html(  '<p style="font-size:20px" > windsnelheid </p><br><p>' + vwin +"<sup><small>mV</sup></small> </p>");
+
+  const d = new Date();
+  console.log(V)
+
+  boxes.temp_box.update(d, temp_2);
+  boxes.pres_box.update(d, pres);
+  boxes.humi_box.update(d, humi);
+  boxes.wind_box.update(d, vwin);
 
 }
 
@@ -68,7 +153,7 @@ let receive = (out, err ) => {
 let update = () => {
 	const cmd = "import weather; weather.get()";
 	gConnection.run( cmd, receive );
-	setTimeout( update, 5000 );
+	setTimeout( update, 60*1000 ); // every minute
 }
 
 

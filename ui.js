@@ -100,7 +100,7 @@ let ui_config = {
 
     sidebar: {
         name: 'sidebar',
-
+         bottomHTML : '<div style="background-color: #eee; padding: 10px 5px; border-top: 1px solid silver">Some HTML</div>',
 
          menu : [
         { id: 1, text: 'Item 1', img: 'icon-page' },
@@ -118,7 +118,7 @@ let ui_config = {
 			 
         const node = this.get(event.target);
 
-        console.log( event.target, node )
+        // console.log( event.target, node )
 
   			f = this.get( event.target );
   			if ( f.callback ) { f.callback(); }

@@ -7,11 +7,13 @@ let gMachineState = {
 		let ms = gMachineState;
 
 
-		let x = `connected to ${ms.machine} | `
-		    x +=`ram : ${ms.mem_free}/${ms.mem_free+ms.mem_alloc} bytes free | `
-		    x +=`fs : ${ms.bsize* ms.bfree}/${ms.bsize*ms.blocks} bytes free `
+		let x = `dev : ${ms.machine} <br> `
+		    x +=`ram : ${ms.mem_free} / ${ms.mem_free+ms.mem_alloc} bytes free <br> `
+		    x +=`fs  : ${ms.bsize* ms.bfree} / ${ms.bsize*ms.blocks} bytes free `
 
-		ui_set_status(x);
+		$(".w2ui-sidebar-bottom")[0].innerHTML = x;
+
+		//ui_set_status(x);
 
 	}
 
@@ -138,11 +140,20 @@ print(os.uname(),os.statvfs('/'),gc.mem_free(),gc.mem_alloc(),machine.freq())`;
 
 			gMachineState.refresh();
 
-		}
+		};
+
+		// update the state every 10 sec
+
+		const ff__ = () => {
+			if ( gConnection.ready() ) gConnection.run( cmd, uutil.handle ( onready ));
+			else console.log("dont get machine state, casue doing something else.");
+			setTimeout( ff__, 10000);
+		};
+
+		ff__();
 
 
-
-		gConnection.run( cmd, uutil.handle ( onready ));
+		
 		
 		             
 	}

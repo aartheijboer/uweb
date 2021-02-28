@@ -29,6 +29,8 @@
 
     <script type="text/javascript" src="uutil.js"></script>
 
+    <script type="text/javascript" src="history.js"></script>
+
 </head>
 <body style="height: 100%; margin:0;">
 
@@ -42,21 +44,15 @@
 
 $( function () {
   
+
+   // global
+   gHistory = getHistory();
+
    ui_init();
   
 
    let main = w2ui.layout.el('main');
 
-   // ui_new_tab("tabx","TABX");
-   // let d = ui_tab_content( "tabx");
-   // ed = createEditor( d );
-   //  w2ui.layout_main_tabs.click("tabx");
-
-
-   // ui_new_tab("taby","TABY");
-   // let d2 = ui_tab_content( "taby");
-   // ed = createEditor( d2 );
-   // w2ui.layout_main_tabs.click("taby");
 
    console.log( $("#ipbox")[0] );
 
@@ -70,7 +66,7 @@ $( function () {
 
 let init2 = () => {
 
-  $("#ipbox")[0].value = "192.168.188.57:8266";
+  $("#ipbox")[0].value = "192.168.188.71:8266";
   $("#pwbox")[0].value = "4025";
 }
 
@@ -106,16 +102,14 @@ let uweb_connect = ( ip, pass ) => {
    w2ui.layout_main_tabs.click("tab_notebook");
 
 
+   // install getting sysinfo every 10 sec.
+   uutil.get_sysinfo();
+
   }
 
 }
 
 
-
 </script>
-
-
-
-
 </body>
 </html>

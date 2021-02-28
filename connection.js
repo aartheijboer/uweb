@@ -47,6 +47,13 @@ function createWebreplConnection( ws_url , password  ) {
 		},
 
 
+		state : ( newstate  ) => {
+
+			if (typeof(netstate) != "undefined") ws.state = newstate;
+			set_status("state : "+String(ws.state) );
+			return ws.state;
+		},
+
 		// the main function that handles communication
 
 		send : function( msg ,    // the msg to send
@@ -96,18 +103,39 @@ function createWebreplConnection( ws_url , password  ) {
 
 		// receive is called by onmessage to accumalate the reply
 
+		timeout : undefined ,
+
 		receive : function ( tag, txt ) { 
 			
-			
-
 			if (tag == "out") r.out_received += txt;
-
 			if (tag == "err") r.err_received += txt;
 
-			r.handle_input( r.out_received, r.err_received );
+			//console.log( tag, r.timeout, r.out_received );
 
+
+			// if the timeout is set, it means there is new content
+			// in out/err_received. As updating the dom is expensive,
+			// we do it in timeout so it's only done when we have time.
+
+			if ( !r.timeout) 
+			{
+				//console.log ("setting timeout");
+				r.timeout = setTimeout(  () => { 
+					//console.log("timout: handle input", r.out_received);
+					r.handle_input( r.out_received, r.err_received );
+					r.timeout = undefined;
+					} , 
+					0 );
+			}
 
 			if (tag == "end") {
+
+				if ( r.timeout ) {
+					clearTimeout( r.timeout );
+					r.timeout = undefined;
+					r.handle_input( r.out_received, r.err_received ); // one more time
+				}
+
 				r.message_received( r.out_received, r.err_received );
 				r.out_received = "";
 				r.err_received = "";
