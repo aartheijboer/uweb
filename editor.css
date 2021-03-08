@@ -10,3 +10,22 @@
 .CodeMirror-scroll {
   max-height: 100%;
 }
+
+
+.drag {
+  position: absolute;
+  right: 200px;
+  top: 200px;
+  z-index: 2147483647;;
+  background-color: #f1f1f1;
+  text-align: center;
+  border: 5px solid #d3d3d3;
+}
+
+#dragheader {
+  padding: 10px;
+  cursor: move;
+  z-index: 10;
+  background-color: #2196F3;
+  color: #fff;
+}

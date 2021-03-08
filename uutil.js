@@ -142,12 +142,12 @@ print(os.uname(),os.statvfs('/'),gc.mem_free(),gc.mem_alloc(),machine.freq())`;
 
 		};
 
-		// update the state every 10 sec
+		// update the state every 5 min sec
 
 		const ff__ = () => {
 			if ( gConnection.ready() ) gConnection.run( cmd, uutil.handle ( onready ));
 			else console.log("dont get machine state, casue doing something else.");
-			setTimeout( ff__, 10000);
+			setTimeout( ff__, 300000);
 		};
 
 		ff__();
